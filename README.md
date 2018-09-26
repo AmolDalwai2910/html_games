@@ -1,4 +1,4 @@
-# html_games
+# ASTEROID ATTACK//html game
 **************************ASTEROID_ATTACK*************************
 an html canvas based game
 1)user operates the ship via mouse pointer and dodges the incoming asteroid to score points
