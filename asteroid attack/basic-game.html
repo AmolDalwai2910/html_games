@@ -1,0 +1,312 @@
+<canvas id="ctx" width="500"  height="500" ></canvas>
+<p id="demo"></p>
+<style>
+#ctx
+{
+	border:1px solid red;
+	background-image:url("sky.png");
+	border-radius:100%;
+	
+	
+	
+}
+
+</style>
+<script>
+var r=0;
+var score=0;
+var framecount=0;
+var ctx=document.getElementById('ctx').getContext('2d');
+ctx.font="30px Arial";
+//gamearea
+var h=500;
+var w=500;
+var starttime=Date.now();
+
+
+//player object
+var p={
+ x:200,
+ spdx:30,
+ y:240,
+ spdy:5,
+ name:'P',
+ hp:10,
+ height:30,
+ width:30,
+};
+//mousemovement
+document.onmousemove=function(mouse)
+{
+
+var mouseX=mouse.clientX-8;
+var mouseY=mouse.clientY-8;
+if(mouseX<0)
+  mouseX=0;
+if(mouseX>475)
+  mouseX=475;
+if(mouseY<0)
+  mouseY=0;
+if(mouseY>475)
+  mouseY=475;
+  
+p.x=mouseX;
+p.y=mouseY;
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+function getDistanceBetween(e1,e2)
+{
+var vx=e1.x-e2.x;
+var vy=e1.y-e2.y;
+return Math.sqrt(vx*vx+vy*vy);
+
+
+
+}
+
+function testCollision(e1,e2)
+{
+
+var d=getDistanceBetween(e1,e2);
+return d<30;
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+var enemyList={};
+enemygenerator();
+enemygenerator();
+enemygenerator();
+
+
+var upgradelist={};
+
+
+
+function enemy(id,x,spdx,y,spdy,height,width)
+{
+var e3={
+ x:x,
+ spdx:spdx,
+ y:y,
+ spdy:spdy,
+ name:'E',
+ id:id,
+ height:height,
+ width:width,
+ 
+};
+enemyList[id]=e3;
+}
+
+
+
+function upgrade(id,x,spdx,y,spdy,height,width)
+{
+var e3={
+ x:x,
+ spdx:spdx,
+ y:y,
+ spdy:spdy,
+ name:'E',
+ id:id,
+ height:height,
+ width:width,
+ color:'orange',
+};
+upgradelist[id]=e3;
+}
+
+function enemygenerator()
+{
+var x=Math.random()*w;
+var spdx=Math.random()*10;
+var y=Math.random()*h;
+var spdy=Math.random()*15;
+var name=Math.random();
+var id=Math.random();
+var height=10+Math.random()*200;
+var width=10+Math.random()*200;
+enemy(id,x,spdx,y,spdy,height,width)
+}
+
+function upgradegenerator()
+{
+var x=Math.random()*w;
+var spdx=0;
+var y=Math.random()*h;
+var spdy=0;
+var name=Math.random();
+var id=Math.random();
+var height=10;
+var width=0;
+upgrade(id,x,spdx,y,spdy,height,width);
+}
+var ballimage=new Image();
+ballimage.src="ship.png";
+var boardimage=new Image();
+boardimage.src="meteor.png";
+
+
+
+
+
+
+
+
+function updateEnitity(p)
+{
+drawenemy(p);
+entityPosition(p);
+
+ 
+ 
+}
+
+function drawplayer(p)
+{
+ctx.fillStyle="green";
+ ctx.drawImage(ballimage,p.x,p.y);
+
+
+ ctx.fillStyle="white";
+
+
+ 
+ 
+ 
+ 
+ 
+}
+function drawenemy(p)
+{ctx.fillStyle="red";
+ ctx.drawImage(boardimage,p.x,p.y);
+
+ 
+  ctx.fillStyle="white";
+}
+
+
+
+
+function entityPosition(p)
+{
+
+//entity p movememnt
+ p.x=p.x+p.spdx;
+ p.y=p.y+p.spdy;
+
+
+ 
+ if(p.x>h || p.x<0)
+ {
+ 
+    p.spdx=-p.spdx;
+	
+ 
+ }
+  if(p.y>w || p.y<0)
+ {
+ 
+    p.spdy=-p.spdy;
+	
+ 
+ }
+
+ 
+
+}
+
+
+
+
+
+
+function update()
+{
+ctx.clearRect(0,0,h,w);
+score++;
+framecount++;
+if(framecount%100==0)
+   enemygenerator();//enemy respawn
+   
+   
+
+
+drawplayer(p);
+
+
+
+
+for(var key in enemyList)
+{
+updateEnitity(enemyList[key]);
+
+var isColliding=testCollision(p,enemyList[key]);
+if(isColliding)
+{
+p.hp=p.hp-1;
+p.height=p.height-2;
+p.width=p.width-2;
+if(p.hp<=0)
+{
+var timesurvived=Date.now()-starttime;
+
+document.getElementById('demo').innerHTML=timesurvived;
+ctx.fillStyle="black";
+
+ctx.fillRect(0,0,500,500);
+
+ctx.fillStyle="white";
+ctx.fillText("You lost!",180,250);
+ctx.fillText("Score: "+score,180,300);
+starttime=Date.now();
+clearInterval(timeout);
+
+
+
+}
+
+}
+
+
+
+
+}
+
+ctx.fillText(p.hp+" HP",0,30);
+ctx.fillText("Score: "+score,200,30);
+
+
+
+
+}
+
+
+
+
+var timeout=setInterval(update,40);
+</script>
